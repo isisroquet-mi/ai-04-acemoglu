@@ -1,100 +1,174 @@
-# Repository 1 — Aouad, Lykouris & Zhong (2026)
+# Repositorio 4 — Acemoglu, Kong y Ozdaglar (2026)
 
-*Human-AI Productivity Paradoxes: Modeling the Interplay of Skill, Effort, and AI Assistance*
-[arXiv:2605.11350](https://arxiv.org/abs/2605.11350) · [cs.GT]
+## Paper trabajado
 
-> **This is the worked example** for *Artificial Intelligence and Economic
-> Modeling* (UP 2026-II). It shows what a weekly repository looks like when it is
-> done well. Yours does not have to be this long — see "What is required" below.
+**Acemoglu, D., Kong, D., & Ozdaglar, A. (2026). _AI, Human Cognition and Knowledge Collapse_. NBER Working Paper No. 34910.**
 
----
+Este repositorio trabaja el modelo teórico propuesto por Acemoglu, Kong y Ozdaglar sobre los efectos de la IA generativa, especialmente la IA agéntica, sobre el aprendizaje humano y la acumulación de conocimiento colectivo.
 
-## What question the paper answers
-
-When does AI assistance make a worker **less** productive?
-
-The paper picks one mechanism and pushes it: AI is a **perfectly substitutable
-input**. Skill $s$, effort $e$ and assistance $a$ enter production only through
-their sum, $x = s + e + a$. Nothing else is going on — no learning, no
-complementarity, no contracting. Everything that follows comes from that single
-modelling choice plus a linear cost of effort.
-
-## The agent's problem
-
-$$\max_{e \ge 0}\; p(s+e+a) - \gamma e$$
-
-with $p$ weakly increasing, concave and twice differentiable, $\gamma > 0$, and
-one constraint that turns out to carry the whole result: $e \ge 0$.
-
-## The main result, with all its conditions
-
-Let $x^{*}$ be the **largest** maximiser of $p(x) - \gamma x$:
-
-$$x^{*} = \max \arg\max_{x} \left[\, p(x) - \gamma x \,\right]$$
-
-This requires a **regularity condition**, without which $x^{*}$ need not exist:
-
-$$\limsup_{x \to \infty} \frac{p(x)}{x} < \gamma$$
-
-**Proposition 2.1.** Under those conditions,
-
-$$e^{*}(s,a) = \left(x^{*} - s - a\right)_{+}, \qquad
-  p^{*}(s,a) = \max\left\{ p(x^{*}),\, p(s+a) \right\}$$
-
-*Intuition in one sentence:* the agent has a single target level of total input,
-tops it up with effort, and once skill plus AI already reach it he stops working.
-
-Two things worth noticing about the proof. It is a **case split** — interior
-versus corner — and contains **no differentiation at all**; and the largest-argmax
-tie-break is not decoration, it is what makes $e^{*}$ well defined when
-$p(x)-\gamma x$ has a flat maximum.
-
-## Sections 3–5: stated, not derived
-
-The three headline results — the deskilling paradox, the unreliability paradox
-and skill polarisation — use machinery well beyond Section 2: a continuous-time
-birth–death Markov chain and its steady state, Arrow–Pratt risk aversion applied
-to a *production* function with IARA/DARA driving the sign, and Bayesian updating
-over a binary signal. They are worth understanding; they are not worth trying to
-reproduce in a week. See `extra/tutorial-alz-completo.pdf` for the full walk.
+La idea central del paper es que la IA puede mejorar las decisiones individuales en el corto plazo, pero también puede reducir los incentivos de las personas a aprender. Si el esfuerzo humano cae, también cae la producción de conocimiento general que sostiene el aprendizaje colectivo en el largo plazo.
 
 ---
 
-## What is in this repository
+## 1. Pregunta del paper
 
-| File | What it is |
-|---|---|
-| `README.md` | This page |
-| `prompts.md` | The full LLM conversation, unedited |
-| `extensions.md` | Which assumptions could be relaxed, and which are dead ends |
-| `hand/` | The derivation of Proposition 2.1, written out by hand |
-| `presentation.tex` / `.pdf` | The 5-minute Beamer deck |
-| `paper/` | The article itself |
-| `extra/` | Above the floor: a full tutorial of the paper and two lecture decks |
+El paper pregunta cómo la IA agéntica afecta los incentivos de aprendizaje humano y la evolución del conocimiento colectivo.
 
-## What is required
+En particular, no solo se pregunta si la IA mejora la calidad de las decisiones individuales, sino si esa mejora puede tener un costo dinámico: reducir el esfuerzo humano que alimenta el conocimiento general de la sociedad.
 
-Only four things. The rest of this repository is above the floor.
+La pregunta puede resumirse así:
 
-1. **`README.md`** — one page: the question, the agent's problem, the main result
-   **with all its conditions**.
-2. **`prompts.md`** — your prompts and the answers, **raw**. Do not tidy them up:
-   the value is in seeing where the model went wrong.
-3. **`hand/`** — at least one photograph of something you derived by hand. Not the
-   whole paper: the one step you did not believe until you did it yourself.
-4. **`presentation.tex` / `.pdf`** — the 5-minute deck, source and compiled.
+$$
+\boxed{
+\text{¿La IA agéntica mejora las decisiones individuales a costa de debilitar el conocimiento colectivo?}
+}
+$$
 
-Deadline is **Tuesday 22:00**, work merged into `main` through a pull request,
-and the repository URL posted as a comment on that week's issue.
+---
 
-## About `hand/`
+## 2. Problema del agente
 
-`hand/prop-2-1-derivacion-a-mano.pdf` is three phone photos of a notebook page.
-That is exactly the standard: crooked, with crossings-out, no transcription. What
-it shows is the first-order condition and the interior-versus-corner split written
-out step by step — the part I did not want to take on trust.
+El modelo considera agentes que deben tomar decisiones o realizar predicciones. Para que una decisión sea exitosa, el agente necesita combinar dos tipos de conocimiento:
 
-## About the LLM conversation
+$$
+\text{conocimiento general} + \text{conocimiento específico del contexto}.
+$$
+
+El conocimiento general corresponde al saber compartido por una comunidad. Puede pensarse como conocimiento médico, financiero, técnico o científico acumulado. El conocimiento específico del contexto corresponde a información particular sobre el caso individual que enfrenta el agente.
+
+El agente elige un nivel de esfuerzo $e_{i,t}$. Ese esfuerzo tiene un costo, pero produce información útil. En el modelo, el esfuerzo humano genera dos señales:
+
+1. una señal privada sobre el contexto específico del agente;
+2. una señal pública, más delgada, que contribuye al conocimiento general de la comunidad.
+
+La utilidad esperada del agente puede escribirse como:
+
+$$U_{i,t} = f(0,0) + G(X_t)\Delta_G + G(X_t)G(Y_{i,t})\Delta_X- \frac{1}{\alpha}e_{i,t}^{\alpha},\qquad \alpha>1.$$
+
+donde:
+
+$$
+Y_{i,t}
+= \sigma^{-2}
++\lambda_I e_{i,t}
++\tau_A.
+$$
+
+Aquí, $X_t$ representa la precisión del conocimiento general disponible; $Y_{i,t}$ representa la precisión del conocimiento específico del agente; $\tau_A$ mide la precisión de la recomendación de la IA agéntica; y $\Delta_X>0$ captura la complementariedad entre conocimiento general y conocimiento específico.
+
+El punto clave es que el agente internaliza el beneficio privado de aprender sobre su propio contexto, pero no internaliza completamente el beneficio social de contribuir al conocimiento general. Por eso, existe una externalidad de aprendizaje.
+
+---
+
+## 3. Resultado principal y condiciones
+
+El resultado principal del paper es que la IA agéntica genera una tensión entre el corto y el largo plazo.
+
+En el corto plazo, una IA más precisa puede mejorar la información específica del agente y ayudarlo a tomar mejores decisiones. Sin embargo, esa misma precisión reduce el incentivo del agente a realizar esfuerzo propio de aprendizaje.
+
+La tensión central puede expresarse así:
+
+$$
+\boxed{
+X_t \uparrow \Rightarrow e^* \uparrow
+}
+$$
+
+pero
+
+$$
+\boxed{
+\tau_A \uparrow \Rightarrow e^* \downarrow.
+}
+$$
+
+Es decir, el conocimiento general complementa el esfuerzo humano, mientras que la IA agéntica sustituye ese esfuerzo.
+
+Esta intuición se obtiene a partir de la Observación 1 del paper. El beneficio marginal del esfuerzo es:
+
+$$\frac{\partial U_{i,t}}{\partial e_{i,t}}= \Delta_XG(X_t)\lambda_I g(Y_{i,t})- e_{i,t}^{\alpha-1}.$$
+
+Al derivar respecto al conocimiento general $X_t$, se obtiene:
+
+$$\frac{\partial^2 U_{i,t}} {\partial e_{i,t}\partial X_t}= \Delta_X\lambda_I g(X_t)g(Y_{i,t})>0.$$
+
+Por tanto, el conocimiento general aumenta el retorno marginal del esfuerzo humano.
+
+En cambio, al derivar respecto a la precisión de la IA agéntica $\tau_A$, se obtiene:
+
+$$\frac{\partial^2 U_{i,t}} {\partial e_{i,t}\partial \tau_A}= \Delta_XG(X_t)\lambda_I g'(Y_{i,t})<0.$$
+
+Este signo es negativo porque $g'(Y_{i,t})<0$. Por tanto, una IA agéntica más precisa reduce el retorno marginal del esfuerzo humano.
+
+---
+
+## 4. Bienestar y precisión de la IA
+
+Una respuesta intuitiva sería pensar que una IA más precisa siempre aumenta el bienestar. Sin embargo, el paper muestra que esto no necesariamente ocurre.
+
+El bienestar en el estado estacionario alto puede escribirse como:
+
+$$\bar U^+ =G(\bar X_h)\Delta_G+G(\bar X_h)G(\bar Y_h)\Delta_X-\frac{1}{\alpha}\bar e_h^\alpha.$$
+
+El efecto de aumentar la precisión de la IA tiene dos componentes:
+
+$$\frac{d\bar U^+}{d\tau_A}=\underbrace{G(\bar X_h)\Delta_X g(\bar Y_h)}_{\text{efecto directo positivo}}+ \underbrace{g(\bar X_h)\left[\Delta_G+ G(\bar Y_h)\Delta_X\right]\frac{d\bar X_h}{d\tau_A}}_{\text{efecto indirecto negativo}}.$$
+
+El efecto directo es positivo porque una IA más precisa mejora la información específica del agente. Pero el efecto indirecto es negativo porque una IA más precisa reduce el esfuerzo humano, lo que debilita la acumulación de conocimiento general.
+
+Por eso:
+
+$$
+\boxed{
+\frac{d\bar U^+}{d\tau_A}
+\gtrless
+0.
+}
+$$
+
+En consecuencia, el bienestar no necesariamente aumenta con la precisión de la IA. Puede aumentar al inicio, pero caer cuando la IA se vuelve demasiado precisa y desplaza demasiado el aprendizaje humano.
+
+---
+
+## 5. Supuestos relajados y supuesto no relajado
+
+En la Sección 5, los autores relajan varios supuestos del modelo base.
+
+Primero, relajan el supuesto de que la IA agéntica solo entrega información específica al individuo y no mejora la agregación del conocimiento general. En una extensión, permiten que la IA también aumente la capacidad de agregación $I$.
+
+Segundo, relajan el supuesto de que el conocimiento general nuevo proviene únicamente del esfuerzo humano. Para ello, introducen datos sintéticos, representados por una precisión adicional $\tau_{syn}$.
+
+Tercero, relajan el supuesto de que el esfuerzo humano produce de manera conjunta conocimiento general y conocimiento específico. En la extensión de separabilidad imperfecta, permiten que la contribución del esfuerzo al conocimiento general dependa de $e^\beta$.
+
+Sin embargo, hay un supuesto fuerte del lado de la producción que no relajan de fondo:
+
+$$
+\boxed{
+\Delta_I=0
+\qquad
+\text{y}
+\qquad
+\Delta_X>0.
+}
+$$
+
+Este supuesto implica que el conocimiento específico por sí solo no genera valor si no está acompañado por conocimiento general. Por eso, el resultado de colapso del conocimiento depende fuertemente de una complementariedad productiva fuerte entre conocimiento general y conocimiento específico.
+
+Una posible crítica es que el paper explora extensiones sobre agregación, datos sintéticos y separabilidad del esfuerzo, pero no analiza qué ocurre si la información específica producida por la IA tiene valor incluso cuando el conocimiento general es bajo, es decir, si $\Delta_I>0$.
+
+---
+
+## 6. Nota sobre la versión leída
+
+Para este repositorio se trabajó como versión principal:
+
+**Acemoglu, D., Kong, D., & Ozdaglar, A. (2026). _AI, Human Cognition and Knowledge Collapse_. NBER Working Paper No. 34910, February 2026.**
+
+Esta versión corresponde a un **working paper del NBER**, por lo que debe tomarse en cuenta que no es un artículo revisado por pares.
+
+Además, se contrastó con otra versión del mismo paper fechada el **5 de mayo de 2026**. Ambas versiones mantienen el mismo título, los mismos autores, el mismo argumento central y una estructura general muy similar. Sin embargo, difieren en la portada, la fecha y algunos aspectos de presentación y notación del modelo.
+
+Por transparencia, la versión declarada como leída y usada para el análisis es la versión **NBER Working Paper No. 34910**.
 
 `prompts.md` is the export of the session that produced the tutorial in `extra/`.
 Read it for what it gets wrong as much as for what it gets right. The episode
