@@ -1,0 +1,13 @@
+{
+  "paper": "AI, Human Cognition and Knowledge Collapse",
+  "source_version": "NBER Working Paper 34910, February 2026",
+  "formalization_status": "partial",
+  "selected_result": "Observation 1, agentic-AI substitution channel",
+  "lean_version": "v4.30.0-rc2",
+  "mathlib_version": "v4.30.0-rc2",
+  "build_command": "lake build AKO26KnowledgeCollapse",
+  "build_status": "passed (625 jobs)",
+  "sorry_count": 0,
+  "axiom_count_added": 0,
+  "human_review": "not recorded"
+}

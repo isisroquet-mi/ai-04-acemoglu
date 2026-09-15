@@ -1,0 +1,16 @@
+name = "AKO26KnowledgeCollapse"
+version = "0.1.0"
+keywords = ["economics", "formalization", "lean4"]
+defaultTargets = ["AKO26KnowledgeCollapse"]
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.30.0-rc2"
+
+[[lean_lib]]
+name = "AKO26KnowledgeCollapse"
