@@ -5,6 +5,8 @@
 \usepackage{lmodern}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+% Reutiliza la sans serif del tema para fragmentos de código.
+\renewcommand{\ttdefault}{lmss}
 
 % Paleta en variaciones de azul
 \definecolor{AzulNoche}{HTML}{082F49}
@@ -30,7 +32,7 @@
 \setbeamertemplate{footline}{%
   \begin{beamercolorbox}[wd=\paperwidth,ht=2.7ex,dp=1.2ex,leftskip=.55cm,rightskip=.55cm]{author in head/foot}%
   \color{Gris}\scriptsize Acemoglu, Kong y Ozdaglar (2026) - NBER WP 34910
-  \hfill\textcolor{AzulMedio}{\insertframenumber/8}
+  \hfill\textcolor{AzulMedio}{\insertframenumber/\inserttotalframenumber}
   \end{beamercolorbox}}
 \setbeamerfont{title}{size=\fontsize{25}{29}\selectfont,series=\bfseries}
 \setbeamerfont{frametitle}{size=\Large,series=\bfseries}
@@ -385,6 +387,80 @@ Y_{i,t}=\sigma^{-2}+\lambda_I e_{i,t}+\tau_A.
 \end{itemize}
 
 {\tiny\color{Gris}El umbral separa dos cuencas de atracción. Una diferencia inicial de $0.04$ cambia el resultado de largo plazo.}
+\end{columns}
+\end{frame}
+
+% 9. Traducción Lean
+\begin{frame}{Lean: traducción de la Observación 1}
+\begin{columns}[T,onlytextwidth]
+\column{0.51\textwidth}
+\azul{Ecuación original}
+
+{\small
+\[
+M(\tau_A)=\Delta_XG(X)\lambda_I
+g\!\left(\sigma^{-2}+\lambda_I e+\tau_A\right)-c'(e),
+\]
+\[
+\boxed{
+\frac{\partial M}{\partial\tau_A}
+=\Delta_XG(X)\lambda_I g'(Y)<0
+}
+\]}
+
+{\footnotesize Lean representa el lado derecho con \texttt{aiPrecisionCrossPartial} y verifica su signo. La igualdad con la derivada cruzada se toma de la traducción del paper.}
+
+\column{0.45\textwidth}
+\azul{Objetos y supuestos}
+\begin{itemize}\footnotesize
+  \item \texttt{deltaX}: complementariedad $\Delta_X>0$.
+  \item \texttt{generalKnowledgeValue}: valor evaluado $G(X)>0$.
+  \item \texttt{signalProductivity}: $\lambda_I>0$.
+  \item \texttt{gPrime}: valor evaluado $g'(Y)$.
+  \item \texttt{hgPrime\_neg}: supuesto $g'(Y)<0$.
+\end{itemize}
+
+\begin{block}{Conclusión formal}
+\footnotesize La expresión \texttt{aiPrecisionCrossPartial} es estrictamente negativa bajo esos supuestos.
+\end{block}
+\end{columns}
+\end{frame}
+
+% 10. Prueba Lean y alcance
+\begin{frame}{Lean: prueba verificada}
+\begin{columns}[T,onlytextwidth]
+\column{0.58\textwidth}
+\azul{Paso no trivial}
+\vspace{0.06cm}
+
+{\scriptsize\ttfamily\color{AzulNoche}
+have hCoefficient :\\
+\hspace*{0.25cm}0 < p.deltaX * p.generalKnowledgeValue *\\
+\hspace*{0.62cm}p.signalProductivity :=\\
+\hspace*{0.25cm}mul\_pos (mul\_pos p.deltaX\_pos\\
+\hspace*{0.62cm}p.generalKnowledgeValue\_pos)\\
+\hspace*{0.62cm}p.signalProductivity\_pos\\[0.04cm]
+exact mul\_neg\_of\_pos\_of\_neg\\
+\hspace*{0.25cm}hCoefficient hgPrime\_neg\par
+}
+
+{\footnotesize \texttt{aiPrecisionCrossPartial} representa los cuatro factores de la fórmula. El fragmento prueba que los tres primeros forman un coeficiente positivo y luego usa $g'(Y)<0$.}
+
+\column{0.38\textwidth}
+\azul{Qué comprobó Lean}
+\begin{itemize}\footnotesize
+  \item La traducción conserva los cuatro factores de la fórmula.
+  \item El producto tiene signo negativo bajo las hipótesis visibles.
+  \item El endpoint prueba exactamente la \texttt{Spec}, sin \texttt{sorry} ni axiomas añadidos.
+\end{itemize}
+
+\vspace{0.06cm}
+\azul{Límite de la prueba}
+
+{\footnotesize No deriva la fórmula desde $U$, ni verifica el umbral global $\tau_A^c$, la estabilidad o la no monotonicidad completa del bienestar.}
+
+\vspace{0.10cm}
+{\scriptsize\color{Gris}\texttt{lake build AKO26KnowledgeCollapse}}
 \end{columns}
 \end{frame}
 
